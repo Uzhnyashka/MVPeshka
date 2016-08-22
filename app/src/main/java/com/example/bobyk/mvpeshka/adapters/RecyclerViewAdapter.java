@@ -1,11 +1,6 @@
-package com.example.bobyk.mvpeshka.view.adapters;
+package com.example.bobyk.mvpeshka.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.DrawableWrapper;
-import android.renderscript.ScriptGroup;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.bobyk.mvpeshka.R;
-import com.example.bobyk.mvpeshka.model.data.Category;
+import com.example.bobyk.mvpeshka.model.category.data.Category;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -22,7 +17,6 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 

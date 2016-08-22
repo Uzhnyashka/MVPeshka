@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvTime"
+        android:textSize="10dp"
+        android:text="3 min ago"
+        android:padding="5dp"
+        android:layout_toLeftOf="@+id/btn_delete_comment"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvData"
+        android:layout_below="@+id/tvTime"
+        android:textSize="18dp"
+        android:text="Adasdas: asdasdasdsad"
+        android:padding="5dp"
+        android:layout_toLeftOf="@+id/btn_delete_comment"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete"
+        android:background="@color/deleteBtnColor"
+        android:id="@+id/btn_delete_comment"
+        android:layout_alignParentRight="true"
+        android:layout_margin="5dp"/>
+
+</RelativeLayout>

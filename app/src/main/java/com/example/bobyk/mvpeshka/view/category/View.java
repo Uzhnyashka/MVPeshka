@@ -1,6 +1,6 @@
-package com.example.bobyk.mvpeshka.view;
+package com.example.bobyk.mvpeshka.view.category;
 
-import com.example.bobyk.mvpeshka.model.data.Category;
+import com.example.bobyk.mvpeshka.model.category.data.Category;
 
 import java.util.List;
 
