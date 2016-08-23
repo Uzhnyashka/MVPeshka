@@ -9,4 +9,5 @@ public interface IUploadPresenter {
     void performFileSearch();
     void getLoadFile(int requestCode, int resultCode, Intent data);
     void uploadFile();
+    void downloadFile();
 }

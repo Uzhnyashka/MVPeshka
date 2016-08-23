@@ -1,16 +1,20 @@
 package com.example.bobyk.mvpeshka.view.upload;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
@@ -46,6 +50,8 @@ public class UploadFragment extends Fragment implements UploadView, View.OnClick
     TextView tvProgress;
     Button btnChooseFile;
     Button btnUploadFile;
+    Button btnDownloadFile;
+    ImageView imgField;
 
     @Nullable
     @Override
@@ -55,9 +61,12 @@ public class UploadFragment extends Fragment implements UploadView, View.OnClick
         tvProgress = (TextView) view.findViewById(R.id.tv_progress_loading);
         btnUploadFile = (Button) view.findViewById(R.id.btn_upload_file);
         btnChooseFile = (Button) view.findViewById(R.id.btn_choose_file);
+        btnDownloadFile = (Button) view.findViewById(R.id.btn_download_file);
+        imgField = (ImageView) view.findViewById(R.id.img_field);
 
         btnChooseFile.setOnClickListener(this);
         btnUploadFile.setOnClickListener(this);
+        btnDownloadFile.setOnClickListener(this);
         return view;
     }
 
@@ -70,6 +79,10 @@ public class UploadFragment extends Fragment implements UploadView, View.OnClick
             case R.id.btn_upload_file:
                 presenter.uploadFile();
                 break;
+            case R.id.btn_download_file:
+                imgField.setImageBitmap(null);
+                presenter.downloadFile();
+                break;
         }
     }
 
@@ -79,18 +92,19 @@ public class UploadFragment extends Fragment implements UploadView, View.OnClick
         presenter.getLoadFile(requestCode, resultCode, data);
     }
 
-    @Override
-    public void progressLoading(int progress) {
-        tvProgress.setText(progress);
-    }
 
     @Override
     public void errorLoading() {
-        tvProgress.setText("Error");
+        Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void successLoading(String result) {
         tvProgress.setText(result);
+    }
+
+    @Override
+    public void showImage(Bitmap bitmap) {
+        imgField.setImageBitmap(bitmap);
     }
 }

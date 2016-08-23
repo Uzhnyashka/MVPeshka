@@ -8,6 +8,7 @@ import android.os.Bundle;
 import com.example.bobyk.mvpeshka.R;
 import com.example.bobyk.mvpeshka.view.comments.CommentFragment;
 import com.example.bobyk.mvpeshka.view.upload.UploadFragment;
+import com.example.bobyk.mvpeshka.view.video.UploadVideoFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,7 +18,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
       //  openCommentFragment();
-        openUploadFragment();
+      //  openUploadFragment();
+        openUploadVideoFragment();
     }
 
     private void openCommentFragment() {
@@ -37,5 +39,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void openUploadVideoFragment() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragment, UploadVideoFragment.newInstance());
+        ft.addToBackStack(null);
+        ft.commit();
     }
 }

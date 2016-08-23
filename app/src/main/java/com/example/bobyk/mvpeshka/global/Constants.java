@@ -8,12 +8,12 @@ public class Constants {
     public static final String BASE_API = "";
 
     // Categories
-    public static final String API_CATEGORY = "/categories/and";
+    public static final String API_CATEGORY = "";
 
     // Comments
     public static final String API_COMMENT = "";
-    public static final String API_ADD_COMMENT = "/post/comments/add";
-    public static final String API_DELETE_COMMENT = "/comments/";
+    public static final String API_ADD_COMMENT = "";
+    public static final String API_DELETE_COMMENT = "";
 
     // Amazon
     public static final String AMAZON_AUTH = "";
@@ -21,4 +21,5 @@ public class Constants {
     public static final String AMAZON_BASE_URL = "";
 
     public static final int READ_FILE_REQUEST_CODE = 322;
+    public static final int READ_VIDEO_REQUEST_CODE = 228;
 }

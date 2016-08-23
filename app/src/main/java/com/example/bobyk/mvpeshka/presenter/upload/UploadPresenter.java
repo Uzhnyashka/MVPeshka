@@ -3,6 +3,7 @@ package com.example.bobyk.mvpeshka.presenter.upload;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
@@ -30,11 +31,24 @@ public class UploadPresenter implements IUploadPresenter {
     private File file;
     private UploadView mView;
     private Fragment mFragment;
+    private TransferUtility transferUtility;
 
     public UploadPresenter(Activity activity, Fragment fragment, UploadView view) {
         this.mContext = activity;
         this.mView = view;
         this.mFragment = fragment;
+
+        init();
+    }
+
+    private void init() {
+        CognitoCachingCredentialsProvider credentialProvider = new CognitoCachingCredentialsProvider(
+                mContext,
+                Constants.AMAZON_AUTH,
+                Regions.EU_WEST_1
+        );
+        AmazonS3 s3 = new AmazonS3Client(credentialProvider);
+        transferUtility = new TransferUtility(s3, mContext);
     }
 
     @Override
@@ -105,6 +119,34 @@ public class UploadPresenter implements IUploadPresenter {
             public void onError(int id, Exception ex) {
                 mView.errorLoading();
 
+            }
+        });
+    }
+
+    @Override
+    public void downloadFile() {
+        final File newFile = new File(mContext.getCacheDir().getAbsolutePath(), "xyj.jpg");
+
+        TransferObserver observer = transferUtility.download(
+                Constants.AMAZON_BUCKED,
+                file.getName(),
+                newFile
+        );
+
+        observer.setTransferListener(new TransferListener() {
+            @Override
+            public void onStateChanged(int id, TransferState state) {
+             //   mView.showImage(BitmapFactory.decodeFile(newFile.getAbsolutePath()));
+            }
+
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+
+            }
+
+            @Override
+            public void onError(int id, Exception ex) {
+                mView.errorLoading();
             }
         });
     }
