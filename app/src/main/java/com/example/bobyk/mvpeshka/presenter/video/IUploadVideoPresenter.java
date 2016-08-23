@@ -1,6 +1,8 @@
 package com.example.bobyk.mvpeshka.presenter.video;
 
 import android.content.Intent;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 
 import java.io.File;
 import java.util.List;
@@ -10,7 +12,7 @@ import java.util.List;
  */
 public interface IUploadVideoPresenter {
     void performFileSearch();
-    void uploadVideo();
+    void uploadVideo(int position);
     void downloadVideo();
     void onActivityResult(int requestCode, int resultCode, Intent intent, List<File> list);
 }

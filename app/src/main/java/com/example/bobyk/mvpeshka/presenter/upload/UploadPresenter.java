@@ -91,14 +91,6 @@ public class UploadPresenter implements IUploadPresenter {
 
     @Override
     public void uploadFile() {
-        CognitoCachingCredentialsProvider credentialProvider = new CognitoCachingCredentialsProvider(
-                mContext,
-                Constants.AMAZON_AUTH,
-                Regions.EU_WEST_1
-        );
-        AmazonS3 s3 = new AmazonS3Client(credentialProvider);
-        TransferUtility transferUtility = new TransferUtility(s3, mContext);
-
         TransferObserver observer = transferUtility.upload(
                 Constants.AMAZON_BUCKED,
                 file.getName(),

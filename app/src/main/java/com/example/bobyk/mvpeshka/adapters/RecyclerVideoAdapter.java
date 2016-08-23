@@ -41,20 +41,19 @@ public class RecyclerVideoAdapter extends RecyclerView.Adapter<RecyclerVideoAdap
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        final int p = position;
-        final File file = mVideos.get(position);
+    public void onBindViewHolder(ViewHolder holder, final int position) {
+        File file = mVideos.get(position);
         holder.tvVideoName.setText(file.getName());
         holder.btnVideoUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mOnUploadVideoListener.onUpload(file);
+                mOnUploadVideoListener.onUpload(position);
             }
         });
         holder.btnVideoDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mOnDeleteVideoListener.onDelete(p);
+                mOnDeleteVideoListener.onDelete(position);
             }
         });
     }

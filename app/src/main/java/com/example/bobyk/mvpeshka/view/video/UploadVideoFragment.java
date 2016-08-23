@@ -4,16 +4,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.bobyk.mvpeshka.R;
 import com.example.bobyk.mvpeshka.adapters.RecyclerVideoAdapter;
 import com.example.bobyk.mvpeshka.listeners.OnDeleteVideoListener;
+import com.example.bobyk.mvpeshka.listeners.OnDownloadVideoListener;
 import com.example.bobyk.mvpeshka.listeners.OnUploadVideoListener;
 import com.example.bobyk.mvpeshka.presenter.video.IUploadVideoPresenter;
 import com.example.bobyk.mvpeshka.presenter.video.UploadVideoPresenter;
@@ -25,7 +28,7 @@ import java.util.List;
 /**
  * Created by bobyk on 23.08.16.
  */
-public class UploadVideoFragment extends Fragment implements UploadVideoView, View.OnClickListener, OnUploadVideoListener, OnDeleteVideoListener {
+public class UploadVideoFragment extends Fragment implements UploadVideoView, View.OnClickListener, OnUploadVideoListener, OnDeleteVideoListener, OnDownloadVideoListener {
 
     private RecyclerView rvVideo;
     private Button btnAddVideo;
@@ -33,6 +36,7 @@ public class UploadVideoFragment extends Fragment implements UploadVideoView, Vi
 
     private IUploadVideoPresenter presenter;
     private RecyclerVideoAdapter adapter;
+    private File f = null;
 
     private List<File> mList = new ArrayList<>();
 
@@ -59,7 +63,7 @@ public class UploadVideoFragment extends Fragment implements UploadVideoView, Vi
         btnPlayVideo.setOnClickListener(this);
         btnAddVideo.setOnClickListener(this);
 
-        presenter = new UploadVideoPresenter(getActivity(), this, this);
+        presenter = new UploadVideoPresenter(getActivity(), this, this, this);
 
         return view;
     }
@@ -71,8 +75,19 @@ public class UploadVideoFragment extends Fragment implements UploadVideoView, Vi
                 presenter.performFileSearch();
                 break;
             case R.id.btn_video_preview:
+                System.out.println("EEE btnPreview");
+                startLoadingFragment();
+                presenter.downloadVideo();
                 break;
         }
+    }
+
+    private void startLoadingFragment() {
+        System.out.println("EEE startLoadingFragment");
+        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragment, LoadingFragment.newInstance());
+        ft.addToBackStack(null);
+        ft.commit();
     }
 
     @Override
@@ -82,8 +97,8 @@ public class UploadVideoFragment extends Fragment implements UploadVideoView, Vi
     }
 
     @Override
-    public void onUpload(File file) {
-
+    public void onUpload(int position) {
+        presenter.uploadVideo(position);
     }
 
     @Override
@@ -97,5 +112,24 @@ public class UploadVideoFragment extends Fragment implements UploadVideoView, Vi
         mList.clear();
         mList.addAll(list);
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void successUploadVideo() {
+        Toast.makeText(getContext(), "Success Upload", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void error() {
+        Toast.makeText(getContext(), "Error Upload", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDownloadFinish(String path) {
+        System.out.println("EEE onDownload()");
+        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragment, VideoFragment.newInstance(path));
+        ft.addToBackStack(null);
+        ft.commit();
     }
 }
