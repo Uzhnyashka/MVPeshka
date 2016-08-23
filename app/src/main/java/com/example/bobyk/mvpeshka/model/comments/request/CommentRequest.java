@@ -1,4 +1,4 @@
-package com.example.bobyk.mvpeshka.model.comments;
+package com.example.bobyk.mvpeshka.model.comments.request;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Created by bobyk on 19.08.16.
  */
-public class CommentAddBody {
+public class CommentRequest {
     @SerializedName("userid")
     @Expose
     private long userid;

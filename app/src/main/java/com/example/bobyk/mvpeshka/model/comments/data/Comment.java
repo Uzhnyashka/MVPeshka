@@ -1,4 +1,4 @@
-package com.example.bobyk.mvpeshka.model.comments;
+package com.example.bobyk.mvpeshka.model.comments.data;
 
 /**
  * Created by bobyk on 19.08.16.

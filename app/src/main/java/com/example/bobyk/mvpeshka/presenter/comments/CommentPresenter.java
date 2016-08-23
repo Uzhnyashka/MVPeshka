@@ -2,14 +2,12 @@ package com.example.bobyk.mvpeshka.presenter.comments;
 
 import com.example.bobyk.mvpeshka.model.Model;
 import com.example.bobyk.mvpeshka.model.ModelImpl;
-import com.example.bobyk.mvpeshka.model.comments.Comment;
-import com.example.bobyk.mvpeshka.model.comments.CommentAddBody;
-import com.example.bobyk.mvpeshka.model.comments.Comments;
+import com.example.bobyk.mvpeshka.model.comments.data.Comment;
+import com.example.bobyk.mvpeshka.model.comments.request.CommentRequest;
+import com.example.bobyk.mvpeshka.model.comments.response.Comments;
 import com.example.bobyk.mvpeshka.view.comments.CommentView;
 
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -92,7 +90,7 @@ public class CommentPresenter implements ICommentPresenter{
 
     @Override
     public void addComment(String commentText) {
-        CommentAddBody commentBody = new CommentAddBody();
+        CommentRequest commentBody = new CommentRequest();
         commentBody.setMessage(commentText);
         commentBody.setPostid(postID);
         commentBody.setUserid(userID);

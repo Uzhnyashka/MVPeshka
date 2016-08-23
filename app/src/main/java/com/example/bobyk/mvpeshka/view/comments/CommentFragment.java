@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 import com.example.bobyk.mvpeshka.R;
 import com.example.bobyk.mvpeshka.listeners.OnDeleteCommentListener;
-import com.example.bobyk.mvpeshka.model.comments.Comment;
+import com.example.bobyk.mvpeshka.model.comments.data.Comment;
 import com.example.bobyk.mvpeshka.presenter.comments.CommentPresenter;
 import com.example.bobyk.mvpeshka.presenter.comments.ICommentPresenter;
 import com.example.bobyk.mvpeshka.adapters.RecyclerCommentAdapter;
@@ -23,7 +23,6 @@ import com.example.bobyk.mvpeshka.adapters.RecyclerCommentAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.ButterKnife;
 /**
  * Created by bobyk on 19.08.16.
  */
@@ -49,7 +48,6 @@ public class CommentFragment extends Fragment implements CommentView, OnDeleteCo
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.comment_layout, null);
-        ButterKnife.bind(view);
         rv = (RecyclerView) view.findViewById(R.id.rv);
         btnAddComment = (Button) view.findViewById(R.id.add_comment_btn);
         txtAddComment = (EditText) view.findViewById(R.id.add_comment_field);

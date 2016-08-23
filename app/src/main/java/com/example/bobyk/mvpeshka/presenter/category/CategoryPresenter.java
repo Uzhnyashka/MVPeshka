@@ -2,7 +2,7 @@ package com.example.bobyk.mvpeshka.presenter.category;
 
 import com.example.bobyk.mvpeshka.model.Model;
 import com.example.bobyk.mvpeshka.model.ModelImpl;
-import com.example.bobyk.mvpeshka.model.category.data.Categories;
+import com.example.bobyk.mvpeshka.model.category.response.Categories;
 import com.example.bobyk.mvpeshka.view.category.View;
 
 import retrofit2.Call;

@@ -1,5 +1,6 @@
-package com.example.bobyk.mvpeshka.model.comments;
+package com.example.bobyk.mvpeshka.model.comments.response;
 
+import com.example.bobyk.mvpeshka.model.comments.data.Comment;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

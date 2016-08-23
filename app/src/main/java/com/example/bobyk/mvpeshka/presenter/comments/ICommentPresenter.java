@@ -1,7 +1,5 @@
 package com.example.bobyk.mvpeshka.presenter.comments;
 
-import com.example.bobyk.mvpeshka.model.comments.CommentAddBody;
-
 /**
  * Created by bobyk on 19.08.16.
  */

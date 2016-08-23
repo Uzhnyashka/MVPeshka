@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.example.bobyk.mvpeshka.R;
 import com.example.bobyk.mvpeshka.listeners.OnDeleteCommentListener;
-import com.example.bobyk.mvpeshka.model.comments.Comment;
+import com.example.bobyk.mvpeshka.model.comments.data.Comment;
 
 import java.util.ArrayList;
 import java.util.List;

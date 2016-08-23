@@ -1,5 +1,6 @@
-package com.example.bobyk.mvpeshka.model.category.data;
+package com.example.bobyk.mvpeshka.model.category.response;
 
+import com.example.bobyk.mvpeshka.model.category.data.Category;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

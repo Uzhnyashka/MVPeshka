@@ -1,7 +1,6 @@
 package com.example.bobyk.mvpeshka.view.comments;
 
-import com.example.bobyk.mvpeshka.model.category.data.Category;
-import com.example.bobyk.mvpeshka.model.comments.Comment;
+import com.example.bobyk.mvpeshka.model.comments.data.Comment;
 
 import java.util.List;
 
