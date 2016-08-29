@@ -86,7 +86,6 @@ public class UploadVideoFragment extends Fragment implements UploadVideoView, Vi
         System.out.println("EEE startLoadingFragment");
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment, LoadingFragment.newInstance());
-        ft.addToBackStack(null);
         ft.commit();
     }
 
@@ -125,10 +124,10 @@ public class UploadVideoFragment extends Fragment implements UploadVideoView, Vi
     }
 
     @Override
-    public void onDownloadFinish(String path) {
+    public void onDownloadFinish(List<String> path) {
         System.out.println("EEE onDownload()");
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment, VideoFragment.newInstance(path));
+        ft.replace(R.id.fragment, VideoReviewFragment.newInstance(path));
         ft.addToBackStack(null);
         ft.commit();
     }

@@ -38,6 +38,7 @@ public class UploadVideoPresenter implements IUploadVideoPresenter {
 
     private List<File> mList = new ArrayList<>();
     private List<String> uploadedVideoNames = new ArrayList<>();
+    private List<String> downlodedVideoPath = new ArrayList<>();
 
     private TransferUtility transferUtility;
 
@@ -102,8 +103,10 @@ public class UploadVideoPresenter implements IUploadVideoPresenter {
 
     @Override
     public void downloadVideo() {
-        System.out.println("EEE startDownload");
-        for (String name : uploadedVideoNames) {
+        System.out.println("WWW startDownload " + uploadedVideoNames.size());
+        for (int i = 0; i < uploadedVideoNames.size(); i++) {
+            System.out.println("WWW i: " + i);
+            String name = uploadedVideoNames.get(i);
             final File newFile = new File(mContext.getCacheDir().getAbsolutePath(), name);
             TransferObserver observer = transferUtility.download(
                     Constants.AMAZON_BUCKED,
@@ -116,7 +119,10 @@ public class UploadVideoPresenter implements IUploadVideoPresenter {
                 public void onStateChanged(int id, TransferState state) {
                     //   mView.showImage(BitmapFactory.decodeFile(newFile.getAbsolutePath()));
                     if (state.equals(TransferState.COMPLETED)) {
-                        mOndownloadVideoListener.onDownloadFinish(newFile.getPath());
+                        downlodedVideoPath.add(newFile.getPath());
+                        if (downlodedVideoPath.size() == uploadedVideoNames.size()) {
+                            mOndownloadVideoListener.onDownloadFinish(downlodedVideoPath);
+                        }
                     }
                 }
 

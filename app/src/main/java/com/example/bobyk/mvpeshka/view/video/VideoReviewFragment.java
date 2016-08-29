@@ -9,6 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.bobyk.mvpeshka.R;
+import com.example.bobyk.mvpeshka.adapters.PagerVideoAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by bobyk on 23.08.16.
@@ -16,10 +20,13 @@ import com.example.bobyk.mvpeshka.R;
 public class VideoReviewFragment extends Fragment {
 
     private ViewPager videoPager;
+    private List<String> mVideos = new ArrayList<>();
+    private PagerVideoAdapter adapter;
 
-    public static VideoReviewFragment newInstance() {
+    public static VideoReviewFragment newInstance(List<String> list) {
         Bundle args = new Bundle();
         VideoReviewFragment fragment = new VideoReviewFragment();
+        fragment.setVideos(list);
         fragment.setArguments(args);
         return fragment;
     }
@@ -33,8 +40,14 @@ public class VideoReviewFragment extends Fragment {
         return view;
     }
 
+    public void setVideos(List<String> videos) {
+        mVideos = videos;
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        adapter = new PagerVideoAdapter(getContext(), mVideos, getFragmentManager());
+        videoPager.setAdapter(adapter);
     }
 }
