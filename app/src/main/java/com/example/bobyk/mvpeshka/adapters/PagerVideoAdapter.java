@@ -27,7 +27,7 @@ public class PagerVideoAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         System.out.println("WWW pos: " + position);
-        return VideoFragment.newInstance(mVideosPath.get(position));
+        return VideoFragment.newInstance(mVideosPath.get(position), String.valueOf(position));
     }
 
     @Override

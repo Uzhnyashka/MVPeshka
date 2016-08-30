@@ -10,7 +10,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textureView"
+        android:layout_weight="3"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="wqewqeq"
+        android:id="@+id/tvVideo"
         android:layout_weight="1"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="yo"
+        android:id="@+id/btnYO"/>
 
     <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
         android:layout_width="match_parent"

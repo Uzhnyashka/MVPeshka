@@ -13,6 +13,5 @@ import java.util.List;
 public interface IUploadVideoPresenter {
     void performFileSearch();
     void uploadVideo(int position);
-    void downloadVideo();
     void onActivityResult(int requestCode, int resultCode, Intent intent, List<File> list);
 }

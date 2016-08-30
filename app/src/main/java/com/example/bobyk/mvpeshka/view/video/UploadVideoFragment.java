@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * Created by bobyk on 23.08.16.
  */
-public class UploadVideoFragment extends Fragment implements UploadVideoView, View.OnClickListener, OnUploadVideoListener, OnDeleteVideoListener, OnDownloadVideoListener {
+public class UploadVideoFragment extends Fragment implements UploadVideoView, View.OnClickListener, OnUploadVideoListener, OnDeleteVideoListener {
 
     private RecyclerView rvVideo;
     private Button btnAddVideo;
@@ -39,6 +39,8 @@ public class UploadVideoFragment extends Fragment implements UploadVideoView, Vi
     private File f = null;
 
     private List<File> mList = new ArrayList<>();
+
+    private List<String> mUploadedVideoNames = new ArrayList<>();
 
     public static UploadVideoFragment newInstance() {
         Bundle args = new Bundle();
@@ -63,7 +65,7 @@ public class UploadVideoFragment extends Fragment implements UploadVideoView, Vi
         btnPlayVideo.setOnClickListener(this);
         btnAddVideo.setOnClickListener(this);
 
-        presenter = new UploadVideoPresenter(getActivity(), this, this, this);
+        presenter = new UploadVideoPresenter(getActivity(), this, this);
 
         return view;
     }
@@ -75,17 +77,16 @@ public class UploadVideoFragment extends Fragment implements UploadVideoView, Vi
                 presenter.performFileSearch();
                 break;
             case R.id.btn_video_preview:
-                System.out.println("EEE btnPreview");
-                startLoadingFragment();
-                presenter.downloadVideo();
+               // presenter.downloadVideo();
+                showVideoReviewFragment();
                 break;
         }
     }
 
-    private void startLoadingFragment() {
-        System.out.println("EEE startLoadingFragment");
+    private void showVideoReviewFragment() {
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment, LoadingFragment.newInstance());
+        ft.replace(R.id.fragment, VideoReviewFragment.newInstance(mUploadedVideoNames));
+        ft.addToBackStack(null);
         ft.commit();
     }
 
@@ -114,21 +115,16 @@ public class UploadVideoFragment extends Fragment implements UploadVideoView, Vi
     }
 
     @Override
-    public void successUploadVideo() {
-        Toast.makeText(getContext(), "Success Upload", Toast.LENGTH_SHORT).show();
+    public void successUploadVideo(List<String> uploadedVideoNames) {
+        mUploadedVideoNames.clear();
+        mUploadedVideoNames.addAll(uploadedVideoNames);
+        for (String s : mUploadedVideoNames) {
+            System.out.println("QQQ UploadSuccess : " + s);
+        }
     }
 
     @Override
     public void error() {
         Toast.makeText(getContext(), "Error Upload", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onDownloadFinish(List<String> path) {
-        System.out.println("EEE onDownload()");
-        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment, VideoReviewFragment.newInstance(path));
-        ft.addToBackStack(null);
-        ft.commit();
     }
 }

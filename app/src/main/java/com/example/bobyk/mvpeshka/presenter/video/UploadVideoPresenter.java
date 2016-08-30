@@ -34,8 +34,6 @@ public class UploadVideoPresenter implements IUploadVideoPresenter {
     private Fragment mFragment;
     private UploadVideoView mView;
 
-    private OnDownloadVideoListener mOndownloadVideoListener;
-
     private List<File> mList = new ArrayList<>();
     private List<String> uploadedVideoNames = new ArrayList<>();
     private List<String> downlodedVideoPath = new ArrayList<>();
@@ -44,11 +42,10 @@ public class UploadVideoPresenter implements IUploadVideoPresenter {
 
     private File file;
 
-    public UploadVideoPresenter(Activity context, Fragment fragment, UploadVideoView view, OnDownloadVideoListener onDownloadVideoListener) {
+    public UploadVideoPresenter(Activity context, Fragment fragment, UploadVideoView view) {
         mContext = context;
         mFragment = fragment;
         mView = view;
-        mOndownloadVideoListener = onDownloadVideoListener;
         amazonConfig();
     }
 
@@ -84,8 +81,10 @@ public class UploadVideoPresenter implements IUploadVideoPresenter {
             @Override
             public void onStateChanged(int id, TransferState state) {
                 if (state.equals(TransferState.COMPLETED)) {
+                    System.out.println("QQQ : uploadVideo onStateChanged video.getName " + video.getName());
                     uploadedVideoNames.add(video.getName());
-                    mView.successUploadVideo();
+                    System.out.println("QQQ : uploadVideo onStateChanged video.size() " + Integer.parseInt(String.valueOf(video.length()/1024)));
+                    mView.successUploadVideo(uploadedVideoNames);
                 }
             }
 
@@ -101,16 +100,17 @@ public class UploadVideoPresenter implements IUploadVideoPresenter {
         });
     }
 
-    @Override
+  /*  @Override
     public void downloadVideo() {
         System.out.println("WWW startDownload " + uploadedVideoNames.size());
         for (int i = 0; i < uploadedVideoNames.size(); i++) {
             System.out.println("WWW i: " + i);
             String name = uploadedVideoNames.get(i);
+            System.out.println("QQQ downloadVideo.name: " + name);
             final File newFile = new File(mContext.getCacheDir().getAbsolutePath(), name);
             TransferObserver observer = transferUtility.download(
                     Constants.AMAZON_BUCKED,
-                    file.getName(),
+                    name,
                     newFile
             );
 
@@ -120,6 +120,7 @@ public class UploadVideoPresenter implements IUploadVideoPresenter {
                     //   mView.showImage(BitmapFactory.decodeFile(newFile.getAbsolutePath()));
                     if (state.equals(TransferState.COMPLETED)) {
                         downlodedVideoPath.add(newFile.getPath());
+                        System.out.println("QQQ : downloadVideo video.size() " + + Integer.parseInt(String.valueOf(newFile.length()/1024)));
                         if (downlodedVideoPath.size() == uploadedVideoNames.size()) {
                             mOndownloadVideoListener.onDownloadFinish(downlodedVideoPath);
                         }
@@ -137,7 +138,7 @@ public class UploadVideoPresenter implements IUploadVideoPresenter {
                 }
             });
         }
-    }
+    }*/
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data, List<File> list) {
@@ -147,7 +148,9 @@ public class UploadVideoPresenter implements IUploadVideoPresenter {
             Uri uri = null;
             if (data != null) {
                 uri = data.getData();
+                System.out.println("WWW : uri: " + uri);
                 file = new File(getRealPathFromURI(uri));
+                System.out.println("WWW : fif " + getRealPathFromURI(uri) );
                 mList.add(file);
                 mView.updateVideoList(mList);
             }

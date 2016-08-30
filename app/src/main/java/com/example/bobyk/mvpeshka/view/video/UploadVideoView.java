@@ -8,6 +8,6 @@ import java.util.List;
  */
 public interface UploadVideoView {
     void updateVideoList(List<File> list);
-    void successUploadVideo();
+    void successUploadVideo(List<String> uploadedVideoNames);
     void error();
 }
