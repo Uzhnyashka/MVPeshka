@@ -2,10 +2,10 @@ package com.example.bobyk.mvpeshka.view.video;
 
 import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
-import android.media.MediaPlayer;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.TextureView;
@@ -13,16 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.MediaController;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.VideoView;
+import android.widget.SeekBar;
 
 import com.example.bobyk.mvpeshka.R;
-import com.example.bobyk.mvpeshka.presenter.video.IVideoPresenter;
 import com.example.bobyk.mvpeshka.presenter.video.VideoPresenter;
-
-import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
 import java.io.File;
 
@@ -32,25 +26,26 @@ import java.io.File;
 
 public class VideoFragment extends Fragment implements MVideoView, TextureView.SurfaceTextureListener {
 
+    private String TAG = "WWW";
+
     private String filePath;
     private File file;
-    private IVideoPresenter presenter;
-    private VideoView videoView;
-    private String msg;
+    private VideoPresenter presenter;
 
     private TextureView textureView;
-    private DiscreteSeekBar seekBar;
     private LinearLayout root;
-    private TextView tvVideo;
-    private Button btnYO;
-    private boolean ok = false;
+    private SeekBar seekBar;
 
     private Surface surface = null;
 
-    public static VideoFragment newInstance(String filePath, String msg) {
+    private Button btnPause;
+    private Button btnStart;
+
+    private boolean ok = false;
+
+    public static VideoFragment newInstance(String filePath) {
         Bundle args = new Bundle();
         args.putString("filePath", filePath);
-        args.putString("msg", msg);
         VideoFragment fragment = new VideoFragment();
         fragment.setArguments(args);
         return fragment;
@@ -60,53 +55,101 @@ public class VideoFragment extends Fragment implements MVideoView, TextureView.S
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         filePath = getArguments().getString("filePath");
-        msg = getArguments().getString("msg");
-        System.out.println("WWW ff " + filePath);
-
         file = new File(filePath);
-        presenter = new VideoPresenter(this, filePath);
+        Log.d(TAG, "onCreate: file " + filePath);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.video_fragment, null);
-        ok = false;
         initView(view);
-
         return view;
     }
+
+
 
     private void initView(View view) {
         textureView = (TextureView) view.findViewById(R.id.textureView);
         textureView.setSurfaceTextureListener(this);
 
-        seekBar = (DiscreteSeekBar) view.findViewById(R.id.seekBar);
-        tvVideo = (TextView) view.findViewById(R.id.tvVideo);
-        tvVideo.setText(msg);
-        btnYO = (Button) view.findViewById(R.id.btnYO);
-        btnYO.setOnClickListener(new View.OnClickListener() {
+        seekBar = (SeekBar) view.findViewById(R.id.seek_bar);
+        root = (LinearLayout) view.findViewById(R.id.ll);
+        btnPause = (Button) view.findViewById(R.id.btnPause);
+        btnStart = (Button) view.findViewById(R.id.btnStart);
+
+        btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ok) {
-                    presenter.prepareMediaPlayer(surface);
+                if (presenter != null) {
+                    if (ok) {
+                        Log.d(TAG, "onClick: ");
+                        presenter.prepareMediaPlayer(surface, true);
+                        presenter.start();
+                    }
                 }
             }
         });
-        root = (LinearLayout) view.findViewById(R.id.ll);
+
+        btnPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (presenter != null) presenter.pause();
+            }
+        });
+
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
         surface = new Surface(surfaceTexture);
-        System.out.println("WWW OP new Surface");
         ok = true;
+        Log.d(TAG, "onSurfaceTextureAvailable: file " + filePath);
+        //presenter.prepareMediaPlayer(surface, false);
+       // presenter.start();
+        //presenter.prepareMediaPlayer(surface, false);
+        //presenter.prepareMediaPlayer(surface, false);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop: file " + filePath);
+        presenter.stop();
+        presenter.release();
+        ok = false;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "initView: new presenter for file " + filePath);
+        presenter = new VideoPresenter(this, filePath, seekBar);
+      //  if (ok) presenter.prepareMediaPlayer(surface, false);
+        Log.d(TAG, "onResume: file " + filePath);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+      //  presenter = null;
+        Log.d(TAG, "onDestroy: file " + filePath);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+       // Log.d(TAG, "onSaveInstanceState: current position " + presenter.getCurrentPosition());
+       // outState.putInt("cp", presenter.getCurrentPosition());
     }
 
     @Override
     public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-
     }
 
     @Override
@@ -128,5 +171,6 @@ public class VideoFragment extends Fragment implements MVideoView, TextureView.S
     public void transformTexture(Matrix matrix) {
         textureView.setTransform(matrix);
     }
+    
 
 }

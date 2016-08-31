@@ -1,6 +1,9 @@
 package com.example.bobyk.mvpeshka.view.video;
 
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -13,10 +16,7 @@ import android.widget.Toast;
 import com.example.bobyk.mvpeshka.R;
 import com.example.bobyk.mvpeshka.adapters.PagerVideoAdapter;
 import com.example.bobyk.mvpeshka.listeners.OnDownloadVideoListener;
-import com.example.bobyk.mvpeshka.presenter.upload.IUploadPresenter;
-import com.example.bobyk.mvpeshka.presenter.video.DownloadVideoPresenter;
 import com.example.bobyk.mvpeshka.presenter.video.IDownloadVideoPresenter;
-import com.example.bobyk.mvpeshka.presenter.video.IUploadVideoPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,9 +47,9 @@ public class VideoReviewFragment extends Fragment implements OnDownloadVideoList
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mUploadedVideoNames = getArguments().getStringArrayList("videoNames");
-        presenter = new DownloadVideoPresenter(getContext(), mUploadedVideoNames, this);
-        presenter.downloadVideo();
+    //    mUploadedVideoNames = getArguments().getStringArrayList("videoNames");
+    //    presenter = new DownloadVideoPresenter(getContext(), mUploadedVideoNames, this);
+    //    presenter.downloadVideo();
     }
 
     @Nullable
@@ -60,12 +60,42 @@ public class VideoReviewFragment extends Fragment implements OnDownloadVideoList
         progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
 
         init();
+        tipaLoad();
         return view;
+    }
+
+    private void tipaLoad() {
+        progressBar.setVisibility(View.GONE);
+        videoPager.setVisibility(View.VISIBLE);
+        mVideos.clear();
+        Uri uri = Uri.parse("file:///storage/emulated/0/DCIM/Camera/VID_20160825_100558.mp4");
+        mVideos.add(getRealPathFromURI(uri));
+        uri = Uri.parse("file:///storage/emulated/0/DCIM/Camera/VID_20160823_150057.mp4");
+        mVideos.add(getRealPathFromURI(uri));
+        uri = Uri.parse("file:///storage/sdcard1/DCIM/Camera/VID_20160326_164840.mp4");
+        mVideos.add(getRealPathFromURI(uri));
+        uri = Uri.parse("file:///storage/sdcard1/DCIM/Camera/VID_20160326_165158.mp4");
+        mVideos.add(getRealPathFromURI(uri));
+        uri = Uri.parse("file:///storage/emulated/0/DCIM/Camera/VID_20160823_150057.mp4");
+        mVideos.add(getRealPathFromURI(uri));
+        uri = Uri.parse("file:///storage/sdcard1/DCIM/Camera/VID_20160326_165158.mp4");
+        mVideos.add(getRealPathFromURI(uri));
+        uri = Uri.parse("file:///storage/sdcard1/DCIM/Camera/VID_20160326_164840.mp4");
+        mVideos.add(getRealPathFromURI(uri));
+        uri = Uri.parse("file:///storage/emulated/0/DCIM/Camera/VID_20160825_100558.mp4");
+        mVideos.add(getRealPathFromURI(uri));
+        uri = Uri.parse("file:///storage/sdcard1/DCIM/Camera/VID_20160326_165158.mp4");
+        mVideos.add(getRealPathFromURI(uri));
+        uri = Uri.parse("file:///storage/sdcard1/DCIM/Camera/VID_20160326_164840.mp4");
+        mVideos.add(getRealPathFromURI(uri));
+        adapter.notifyDataSetChanged();
     }
 
     private void init() {
         adapter = new PagerVideoAdapter(getContext(), mVideos, getChildFragmentManager());
         videoPager.setAdapter(adapter);
+
+        //videoPager.setOffscreenPageLimit(1);
     }
 
     @Override
@@ -78,7 +108,6 @@ public class VideoReviewFragment extends Fragment implements OnDownloadVideoList
 
             @Override
             public void onPageSelected(int position) {
-                System.out.println("WWW selected " + position);
             }
 
             @Override
@@ -96,5 +125,19 @@ public class VideoReviewFragment extends Fragment implements OnDownloadVideoList
         mVideos.clear();
         mVideos.addAll(path);
         adapter.notifyDataSetChanged();
+    }
+
+    private String getRealPathFromURI(Uri contentURI) {
+        String result;
+        Cursor cursor = getActivity().getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) {
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
+        }
+        return result;
     }
 }

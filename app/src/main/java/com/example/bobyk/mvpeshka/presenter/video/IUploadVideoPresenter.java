@@ -1,8 +1,6 @@
 package com.example.bobyk.mvpeshka.presenter.video;
 
 import android.content.Intent;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 
 import java.io.File;
 import java.util.List;
@@ -14,4 +12,5 @@ public interface IUploadVideoPresenter {
     void performFileSearch();
     void uploadVideo(int position);
     void onActivityResult(int requestCode, int resultCode, Intent intent, List<File> list);
+    void deleteUploadVideo(int position);
 }

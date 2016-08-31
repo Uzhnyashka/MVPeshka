@@ -2,8 +2,11 @@ package com.example.bobyk.mvpeshka.presenter.video;
 
 import android.graphics.Matrix;
 import android.media.MediaPlayer;
+import android.os.Handler;
+import android.util.Log;
 import android.view.Surface;
 import android.widget.MediaController;
+import android.widget.SeekBar;
 
 import com.example.bobyk.mvpeshka.view.video.MVideoView;
 
@@ -12,42 +15,97 @@ import com.example.bobyk.mvpeshka.view.video.MVideoView;
  */
 public class VideoPresenter implements IVideoPresenter, MediaController.MediaPlayerControl {
 
+    private String TAG = "WWW";
+
     private MVideoView mView;
     private MediaPlayer mp = null;
     private String mFilePath;
+    private SeekBar mSeekBar;
+    private Runnable runnable;
+    private Handler handler;
 
-    public VideoPresenter(MVideoView view, String filePath) {
+    private boolean run = false;
+
+    private boolean prepared = false;
+
+    public VideoPresenter(MVideoView view, String filePath, SeekBar seekBar) {
         mView = view;
         mFilePath = filePath;
+        mSeekBar = seekBar;
+        init();
+    }
+
+    private void init() {
+        mp = new MediaPlayer();
+        handler = new Handler();
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (!mp.isPlaying()) {
+                    mp.seekTo(mSeekBar.getProgress());
+                    mp.start();
+                    mp.pause();
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                if (mp.isPlaying()) {
+                    mp.pause();
+                }
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mp.seekTo(mSeekBar.getProgress());
+                mp.start();
+            }
+        });
+
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                updateSeekBar();
+                handler.postDelayed(this, 100);
+            }
+        };
+
+    }
+
+    private void updateSeekBar() {
+        if (mp != null && prepared) {
+            mSeekBar.setProgress(mp.getCurrentPosition());
+        }
     }
 
     @Override
-    public void prepareMediaPlayer(Surface surface) {
+    public void prepareMediaPlayer(Surface surface, final boolean visible) {
         try{
-            if (mp != null) {
-                System.out.println("WWW wtf!@#");
-            }
-            mp = new MediaPlayer();
-            mp.setDataSource(mFilePath);
+                Log.d(TAG, "prepareMediaPlayer: ");
+                mp.setDataSource(mFilePath);
 
-            mp.setSurface(surface);
-            mp.setLooping(true);
-            mp.prepareAsync();
+                mp.setSurface(surface);
+                mp.setLooping(true);
+                mp.prepareAsync();
 
+                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        Log.d(TAG, "onPrepared: mp.duration " + mp.getDuration());
+                        prepared = true;
+                        if (visible) {
+                            VideoPresenter.this.start();
+                        }
+                        mSeekBar.setMax(mp.getDuration());
+                    }
+                });
+                mp.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
+                    @Override
+                    public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
+                        mView.updateTextureViewSize(width, height);
+                    }
+                });
 
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-
-                }
-            });
-            mp.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
-                @Override
-                public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
-                    mView.updateTextureViewSize(width, height);
-                }
-            });
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -71,14 +129,34 @@ public class VideoPresenter implements IVideoPresenter, MediaController.MediaPla
         mView.transformTexture(matrix);
     }
 
+    public void stop() {
+        if (prepared && mp.isPlaying()) {
+            mp.stop();
+            mp.reset();
+            handler.removeCallbacks(runnable);
+        }
+        Log.d(TAG, "stop: " + mp.getDuration());
+      //  mp.release();
+    }
+
+    public void release() {
+        Log.d(TAG, "release: mp " + mp.getDuration());
+        if (prepared) mp.release();
+    }
+
     @Override
     public void start() {
-        mp.start();
+        Log.d(TAG, "start: mp " + mp.getDuration());
+        if (mp != null && !mp.isPlaying() && prepared) mp.start();
+        if (!run && prepared && mp != null) {
+            run = true;
+           // runnable.run();
+        }
     }
 
     @Override
     public void pause() {
-        mp.pause();
+        if (mp != null && mp.isPlaying() && prepared) mp.pause();
     }
 
     @Override

@@ -3,7 +3,7 @@ package com.example.bobyk.mvpeshka.adapters;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.example.bobyk.mvpeshka.view.video.VideoFragment;
 
@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Created by bobyk on 26.08.16.
  */
-public class PagerVideoAdapter extends FragmentPagerAdapter {
+public class PagerVideoAdapter extends FragmentStatePagerAdapter {
 
     private List<String> mVideosPath = new ArrayList<>();
     private Context mContext;
@@ -27,7 +27,7 @@ public class PagerVideoAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         System.out.println("WWW pos: " + position);
-        return VideoFragment.newInstance(mVideosPath.get(position), String.valueOf(position));
+        return VideoFragment.newInstance(mVideosPath.get(position));
     }
 
     @Override

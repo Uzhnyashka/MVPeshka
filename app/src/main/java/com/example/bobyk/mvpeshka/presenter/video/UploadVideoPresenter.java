@@ -2,12 +2,10 @@ package com.example.bobyk.mvpeshka.presenter.video;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
@@ -18,7 +16,7 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.example.bobyk.mvpeshka.global.Constants;
-import com.example.bobyk.mvpeshka.listeners.OnDownloadVideoListener;
+import com.example.bobyk.mvpeshka.utils.PathExtractor;
 import com.example.bobyk.mvpeshka.view.video.UploadVideoView;
 
 import java.io.File;
@@ -30,13 +28,14 @@ import java.util.List;
  */
 public class UploadVideoPresenter implements IUploadVideoPresenter {
 
+    private String TAG = "upload";
+
     private Activity mContext;
     private Fragment mFragment;
     private UploadVideoView mView;
 
     private List<File> mList = new ArrayList<>();
     private List<String> uploadedVideoNames = new ArrayList<>();
-    private List<String> downlodedVideoPath = new ArrayList<>();
 
     private TransferUtility transferUtility;
 
@@ -81,10 +80,10 @@ public class UploadVideoPresenter implements IUploadVideoPresenter {
             @Override
             public void onStateChanged(int id, TransferState state) {
                 if (state.equals(TransferState.COMPLETED)) {
-                    System.out.println("QQQ : uploadVideo onStateChanged video.getName " + video.getName());
                     uploadedVideoNames.add(video.getName());
-                    System.out.println("QQQ : uploadVideo onStateChanged video.size() " + Integer.parseInt(String.valueOf(video.length()/1024)));
                     mView.successUploadVideo(uploadedVideoNames);
+                    Log.d(TAG, "onStateChanged: uploadVideo " + video.getName());
+                    Toast.makeText(mContext, "Uploaded", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -100,46 +99,6 @@ public class UploadVideoPresenter implements IUploadVideoPresenter {
         });
     }
 
-  /*  @Override
-    public void downloadVideo() {
-        System.out.println("WWW startDownload " + uploadedVideoNames.size());
-        for (int i = 0; i < uploadedVideoNames.size(); i++) {
-            System.out.println("WWW i: " + i);
-            String name = uploadedVideoNames.get(i);
-            System.out.println("QQQ downloadVideo.name: " + name);
-            final File newFile = new File(mContext.getCacheDir().getAbsolutePath(), name);
-            TransferObserver observer = transferUtility.download(
-                    Constants.AMAZON_BUCKED,
-                    name,
-                    newFile
-            );
-
-            observer.setTransferListener(new TransferListener() {
-                @Override
-                public void onStateChanged(int id, TransferState state) {
-                    //   mView.showImage(BitmapFactory.decodeFile(newFile.getAbsolutePath()));
-                    if (state.equals(TransferState.COMPLETED)) {
-                        downlodedVideoPath.add(newFile.getPath());
-                        System.out.println("QQQ : downloadVideo video.size() " + + Integer.parseInt(String.valueOf(newFile.length()/1024)));
-                        if (downlodedVideoPath.size() == uploadedVideoNames.size()) {
-                            mOndownloadVideoListener.onDownloadFinish(downlodedVideoPath);
-                        }
-                    }
-                }
-
-                @Override
-                public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-
-                }
-
-                @Override
-                public void onError(int id, Exception ex) {
-                    mView.error();
-                }
-            });
-        }
-    }*/
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data, List<File> list) {
         mList.clear();
@@ -148,9 +107,8 @@ public class UploadVideoPresenter implements IUploadVideoPresenter {
             Uri uri = null;
             if (data != null) {
                 uri = data.getData();
-                System.out.println("WWW : uri: " + uri);
-                file = new File(getRealPathFromURI(uri));
-                System.out.println("WWW : fif " + getRealPathFromURI(uri) );
+                Log.d(TAG, "onStateChanged: uri " + uri);
+                file = new File(PathExtractor.getPath(mContext, uri));
                 mList.add(file);
                 mView.updateVideoList(mList);
             }
@@ -159,18 +117,12 @@ public class UploadVideoPresenter implements IUploadVideoPresenter {
         }
     }
 
-    private String getRealPathFromURI(Uri contentURI) {
-        String result;
-        Cursor cursor = mContext.getContentResolver().query(contentURI, null, null, null, null);
-        if (cursor == null) {
-            result = contentURI.getPath();
-        } else {
-            cursor.moveToFirst();
-            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-            result = cursor.getString(idx);
-            cursor.close();
+    @Override
+    public void deleteUploadVideo(int position) {
+        for (String s : uploadedVideoNames) {
         }
-        return result;
+        uploadedVideoNames.remove(position);
+        mView.successUploadVideo(uploadedVideoNames);
     }
 
 }

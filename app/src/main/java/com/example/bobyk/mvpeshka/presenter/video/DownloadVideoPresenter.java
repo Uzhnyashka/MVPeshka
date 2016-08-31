@@ -1,6 +1,7 @@
 package com.example.bobyk.mvpeshka.presenter.video;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
@@ -23,11 +24,13 @@ import java.util.List;
 
 public class DownloadVideoPresenter implements IDownloadVideoPresenter {
 
+    private String TAG = "download";
+
     private Context mContext;
     private OnDownloadVideoListener mOnDownloadVideoListener;
     private List<String> mUploadedVideoNames = new ArrayList<>();
 
-    private List<String> downlodedVideoPath = new ArrayList<>();
+    private List<String> downloadedVideoPath = new ArrayList<>();
 
     private TransferUtility transferUtility;
 
@@ -42,7 +45,7 @@ public class DownloadVideoPresenter implements IDownloadVideoPresenter {
     }
 
     private void init() {
-        downlodedVideoPath.clear();
+        downloadedVideoPath.clear();
     }
 
     private void amazonConfig() {
@@ -57,11 +60,8 @@ public class DownloadVideoPresenter implements IDownloadVideoPresenter {
 
     @Override
     public void downloadVideo() {
-        System.out.println("WWW startDownload " + mUploadedVideoNames.size());
         for (int i = 0; i < mUploadedVideoNames.size(); i++) {
-            System.out.println("WWW i: " + i);
             String name = mUploadedVideoNames.get(i);
-            System.out.println("QQQ downloadVideo.name: " + name);
             final File newFile = new File(mContext.getCacheDir().getAbsolutePath(), name);
             TransferObserver observer = transferUtility.download(
                     Constants.AMAZON_BUCKED,
@@ -72,12 +72,11 @@ public class DownloadVideoPresenter implements IDownloadVideoPresenter {
             observer.setTransferListener(new TransferListener() {
                 @Override
                 public void onStateChanged(int id, TransferState state) {
-                    //   mView.showImage(BitmapFactory.decodeFile(newFile.getAbsolutePath()));
                     if (state.equals(TransferState.COMPLETED)) {
-                        downlodedVideoPath.add(newFile.getPath());
-                        System.out.println("QQQ : downloadVideo video.size() " + + Integer.parseInt(String.valueOf(newFile.length()/1024)));
-                        if (downlodedVideoPath.size() == mUploadedVideoNames.size()) {
-                            mOnDownloadVideoListener.onDownloadFinish(downlodedVideoPath);
+                        downloadedVideoPath.add(newFile.getPath());
+                        Log.d(TAG, "onStateChanged: downloadVideo " + newFile.getName());
+                        if (downloadedVideoPath.size() == mUploadedVideoNames.size()) {
+                            mOnDownloadVideoListener.onDownloadFinish(downloadedVideoPath);
                         }
                     }
                 }

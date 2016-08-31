@@ -16,7 +16,6 @@ import android.widget.Toast;
 import com.example.bobyk.mvpeshka.R;
 import com.example.bobyk.mvpeshka.adapters.RecyclerVideoAdapter;
 import com.example.bobyk.mvpeshka.listeners.OnDeleteVideoListener;
-import com.example.bobyk.mvpeshka.listeners.OnDownloadVideoListener;
 import com.example.bobyk.mvpeshka.listeners.OnUploadVideoListener;
 import com.example.bobyk.mvpeshka.presenter.video.IUploadVideoPresenter;
 import com.example.bobyk.mvpeshka.presenter.video.UploadVideoPresenter;
@@ -65,7 +64,11 @@ public class UploadVideoFragment extends Fragment implements UploadVideoView, Vi
         btnPlayVideo.setOnClickListener(this);
         btnAddVideo.setOnClickListener(this);
 
-        presenter = new UploadVideoPresenter(getActivity(), this, this);
+        if (presenter == null) {
+            presenter = new UploadVideoPresenter(getActivity(), this, this);
+        } else {
+            System.out.println("PPP YO");
+        }
 
         return view;
     }
@@ -77,7 +80,6 @@ public class UploadVideoFragment extends Fragment implements UploadVideoView, Vi
                 presenter.performFileSearch();
                 break;
             case R.id.btn_video_preview:
-               // presenter.downloadVideo();
                 showVideoReviewFragment();
                 break;
         }
@@ -103,6 +105,7 @@ public class UploadVideoFragment extends Fragment implements UploadVideoView, Vi
 
     @Override
     public void onDelete(int position) {
+        presenter.deleteUploadVideo(position);
         mList.remove(position);
         adapter.notifyDataSetChanged();
     }
@@ -119,7 +122,7 @@ public class UploadVideoFragment extends Fragment implements UploadVideoView, Vi
         mUploadedVideoNames.clear();
         mUploadedVideoNames.addAll(uploadedVideoNames);
         for (String s : mUploadedVideoNames) {
-            System.out.println("QQQ UploadSuccess : " + s);
+            System.out.println("PPP : successVideoNames" + s);
         }
     }
 
