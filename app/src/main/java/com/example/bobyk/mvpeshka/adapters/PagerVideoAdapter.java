@@ -4,9 +4,12 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.util.SparseArray;
+import android.view.ViewGroup;
 
 import com.example.bobyk.mvpeshka.view.video.VideoFragment;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,28 +18,45 @@ import java.util.List;
  */
 public class PagerVideoAdapter extends FragmentStatePagerAdapter {
 
-    private List<String> mVideosPath = new ArrayList<>();
+    SparseArray<Fragment> registerFragments = new SparseArray<>();
+    private List<File> mVideos = new ArrayList<>();
     private Context mContext;
 
-    public PagerVideoAdapter(Context context, List<String> videosPath, FragmentManager fm) {
+    public PagerVideoAdapter(Context context, List<File> videos, FragmentManager fm) {
         super(fm);
-        mVideosPath = videosPath;
+        mVideos = videos;
         mContext = context;
     }
 
     @Override
     public Fragment getItem(int position) {
-        System.out.println("WWW pos: " + position);
-        return VideoFragment.newInstance(mVideosPath.get(position));
+        return VideoFragment.newInstance(mVideos.get(position));
+    }
+
+    @Override
+    public Object instantiateItem(ViewGroup container, int position) {
+        Fragment fragment = (Fragment) super.instantiateItem(container, position);
+        registerFragments.put(position, fragment);
+        return fragment;
+    }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+        registerFragments.remove(position);
+        super.destroyItem(container, position, object);
+    }
+
+    public Fragment getRegisteredFragment(int position) {
+        return registerFragments.get(position);
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return String.valueOf(position);
+        return mVideos.get(position).getName();
     }
 
     @Override
     public int getCount() {
-        return mVideosPath.size();
+        return mVideos.size();
     }
 }
