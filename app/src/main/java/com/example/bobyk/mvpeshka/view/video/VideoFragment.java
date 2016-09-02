@@ -45,6 +45,8 @@ public class VideoFragment extends Fragment implements MVideoView, TextureView.S
     private boolean ok = false;
     private boolean visible;
 
+    private int cp;
+
     public static VideoFragment newInstance(File file) {
         Bundle args = new Bundle();
         args.putString("filePath", file.getPath());
@@ -86,8 +88,7 @@ public class VideoFragment extends Fragment implements MVideoView, TextureView.S
                 if (presenter != null) {
                     if (ok) {
                         Log.d(TAG, "onClick: ");
-        //                presenter.prepareMediaPlayer(surface);
-
+                        presenter.start();
                     }
                 }
             }
@@ -96,7 +97,8 @@ public class VideoFragment extends Fragment implements MVideoView, TextureView.S
         btnPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (presenter != null) presenter.stop();
+                Log.d("WTF", "onClick: pause file " + file.getName());
+                if (presenter != null) presenter.pause();
             }
         });
 
@@ -107,15 +109,18 @@ public class VideoFragment extends Fragment implements MVideoView, TextureView.S
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         visible = isVisibleToUser;
-        if (presenter != null) Log.d("WTF", "setUserVisibleHint: visible " + visible + " getReleased " + presenter.getReleased());
+        Log.d("WTF", "setUserVisibleHint: visible " + visible + " presenter " + presenter);
+        if (presenter != null) Log.d(TAG, "setUserVisibleHint: visible " + visible + " getReleased " + presenter.getReleased());
         if (visible && presenter != null && presenter.getReleased()) {
             Log.d(TAG, "setUserVisibleHint: YO");
-            presenter = null;
+
             presenter = new VideoPresenter(this, filePath, seekBar, this);
-            presenter.prepareMediaPlayer(surface);
+            presenter.prepareMediaPlayer(surface, cp);
            // presenter.start();
         }
         if (!visible && presenter != null) {
+            cp = presenter.getCurrentPosition();
+            Log.d("WTF", "setUserVisibleHint: stop file " + file.getName());
             presenter.stop();
         }
     }
@@ -127,8 +132,7 @@ public class VideoFragment extends Fragment implements MVideoView, TextureView.S
             surface = new Surface(surfaceTexture);
             ok = true;
             Log.d(TAG, "onSurfaceTextureAvailable: prepareMediaPlayer " + file.getName());
-            presenter.prepareMediaPlayer(surface);
-            presenter.stop();
+            presenter.prepareMediaPlayer(surface, cp);
         }
     }
 
@@ -137,6 +141,7 @@ public class VideoFragment extends Fragment implements MVideoView, TextureView.S
     public void onStop() {
         super.onStop();
         Log.d(TAG, "onStop: file " + file.getName());
+        if (presenter != null && !presenter.getReleased()) cp = presenter.getCurrentPosition();
         presenter.stop();
         ok = false;
     }
@@ -156,8 +161,19 @@ public class VideoFragment extends Fragment implements MVideoView, TextureView.S
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        // Log.d(TAG, "onSaveInstanceState: current position " + presenter.getCurrentPosition());
-        // outState.putInt("cp", presenter.getCurrentPosition());
+      /*  Log.d("WTF", "onSaveInstanceState: current position " + cp);
+        outState.putInt("cp", cp);*/
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        /*if (savedInstanceState != null) {
+            cp = savedInstanceState.getInt("cp");
+            Log.d("WTF", "onViewStateRestored: cp " + cp);
+        } else {
+            Log.d("WTF", "onViewStateRestored: null");
+        }*/
     }
 
     @Override
@@ -186,6 +202,6 @@ public class VideoFragment extends Fragment implements MVideoView, TextureView.S
 
     @Override
     public void onDeletePlayer() {
-
+        Log.d(TAG, "onDeletePlayer: hey");
     }
 }

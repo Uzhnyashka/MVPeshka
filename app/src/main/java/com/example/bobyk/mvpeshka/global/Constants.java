@@ -11,7 +11,7 @@ public class Constants {
     public static final String API_CATEGORY = "/categories/and";
 
     // Comments
-    public static final String API_COMMENT = "/post/1471592071695/comments/123/and";
+    public static final String API_COMMENT = "";
     public static final String API_ADD_COMMENT = "/post/comments/add";
     public static final String API_DELETE_COMMENT = "/comments/";
 

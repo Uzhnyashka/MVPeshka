@@ -48,30 +48,34 @@ public class VideoPresenter implements IVideoPresenter, MediaController.MediaPla
     }
 
     private void init() {
-        Log.d(TAG, "init: new MediaPlayer " + file.getName());
-
         handler = new Handler();
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (!mp.isPlaying()) {
-                    mp.seekTo(mSeekBar.getProgress());
-                    mp.start();
-                    mp.pause();
+                if (mp != null && !getReleased()) {
+                    if (!mp.isPlaying()) {
+                        mp.seekTo(mSeekBar.getProgress());
+                        mp.start();
+                        mp.pause();
+                    }
                 }
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                if (mp.isPlaying()) {
-                    mp.pause();
+                if (mp != null && !getReleased()) {
+                    if (mp.isPlaying()) {
+                        mp.pause();
+                    }
                 }
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                mp.seekTo(mSeekBar.getProgress());
-                mp.start();
+                if (mp != null && !getReleased()) {
+                    mp.seekTo(mSeekBar.getProgress());
+                    mp.start();
+                }
             }
         });
 
@@ -82,6 +86,7 @@ public class VideoPresenter implements IVideoPresenter, MediaController.MediaPla
                 handler.postDelayed(this, 100);
             }
         };
+        runnable.run();
 
     }
 
@@ -93,9 +98,10 @@ public class VideoPresenter implements IVideoPresenter, MediaController.MediaPla
     }
 
     @Override
-    public synchronized void prepareMediaPlayer(Surface surface) {
+    public synchronized void prepareMediaPlayer(Surface surface, final int cp) {
         try{
             if (mp == null) {
+                Log.d(TAG, "new MediaPlayer " + file.getName());
                 mp = new MediaPlayer();
                 Log.d(TAG, "prepareMediaPlayer: file " + file.getName());
                 mp.setDataSource(mFilePath);
@@ -133,7 +139,8 @@ public class VideoPresenter implements IVideoPresenter, MediaController.MediaPla
                         Log.d(TAG, "onPrepared: file " + file.getName());
                         prepared = true;
                         released = false;
-                        VideoPresenter.this.start();
+                        //VideoPresenter.this.start();
+                       // VideoPresenter.this.seekTo(cp);
                         mSeekBar.setMax(mp.getDuration());
                     }
                 });
@@ -173,12 +180,11 @@ public class VideoPresenter implements IVideoPresenter, MediaController.MediaPla
     }
 
     public void stop() {
-        if (mp != null && !getReleased() && prepared && mp.isPlaying()) {
+        if (mp != null && !getReleased() && prepared) {
             Log.d(TAG, "stop: file " + file.getName() + " mp.Duration " + mp.getDuration());
             mp.release();
             released = true;
-         //   mp = null;
-         //   handler.removeCallbacks(runnable);
+            handler.removeCallbacks(runnable);
             mOnDeletePlayerListener.onDeletePlayer();
         }
       //  mp.release();
@@ -190,10 +196,6 @@ public class VideoPresenter implements IVideoPresenter, MediaController.MediaPla
             Log.d(TAG, "start: file " + file.getName() + " mp.Duration " + mp.getDuration());
             mp.start();
         }
-        if (!run && prepared && mp != null) {
-            run = true;
-      //      runnable.run();
-        }
     }
 
     @Override
@@ -201,7 +203,6 @@ public class VideoPresenter implements IVideoPresenter, MediaController.MediaPla
         if (mp != null && mp.isPlaying() && prepared) {
             Log.d(TAG, "pause: file " + file.getName());
             mp.pause();
-       //     handler.removeCallbacks(runnable);
         }
     }
 
